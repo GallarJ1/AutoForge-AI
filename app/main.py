@@ -6,7 +6,11 @@ import time
 import asyncio
 from collections import defaultdict, deque
 
-from .ai_provider import AzureOpenAIClient
+try:
+    from .ai_provider import AzureOpenAIClient     # when imported as app.main
+except ImportError:
+    from ai_provider import AzureOpenAIClient      # when run as top-level (main.py)
+
 
 app = FastAPI()
 
@@ -100,3 +104,4 @@ async def ai_chat(req_body: ChatRequest, req: Request):
     except Exception as e:
         # Hide internals but surface a clear error
         raise HTTPException(status_code=502, detail=f"AI provider error: {e}")
+    
