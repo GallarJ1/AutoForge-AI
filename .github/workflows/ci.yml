@@ -23,6 +23,14 @@ jobs:
           pip install -r app/requirements.txt
           pip install pytest
 
+      - name: Add repo to PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      - name: Debug import path
+        run: |
+          python -c "import os,sys; print('WS:', os.environ.get('GITHUB_WORKSPACE')); print('PYTHONPATH:', os.environ.get('PYTHONPATH')); print('sys.path[0:3]:', sys.path[:3])"
+          python -c "import app; print('Imported app OK')"
+
       - name: Run tests
         run: pytest -q
 
