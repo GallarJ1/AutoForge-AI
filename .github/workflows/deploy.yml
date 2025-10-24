@@ -1,19 +1,17 @@
-name: Deploy AutoForge API
+name: Deploy AutoForge API (SP)
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -22,16 +20,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Optional: build your wheel / run tests here if you want
-
       - name: Create deployment zip
         run: |
           zip -r release.zip . \
             -x ".git/*" ".github/*" "__pycache__/*" "*.pyc" ".venv/*" "tests/*"
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
+      - name: Azure login
+        uses: azure/login@v2
         with:
-          app-name: AutoForge-api
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: release.zip
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy via CLI (Zip Deploy)
+        run: |
+          az webapp deploy \
+            --resource-group autoforge-project \
+            --name AutoForge-api \
+            --type zip \
+            --src-path release.zip
