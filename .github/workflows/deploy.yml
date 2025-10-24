@@ -1,12 +1,11 @@
 name: Deploy to Azure Web App (F1 Code)
-uses: azure/webapps-deploy@v3
-  with:
-    publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-    package: .
 
 on:
   push:
-    branches: [main]
+    branches: ["main"]
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
@@ -17,6 +16,9 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          # must match your Web App name exactly
+          app-name: AutoForge-api
+          # paste the entire XML of the publish profile into this secret
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          # zip & push the repo (Oryx will build from requirements.txt)
           package: .
