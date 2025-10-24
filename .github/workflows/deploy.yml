@@ -1,4 +1,8 @@
 name: Deploy to Azure Web App (F1 Code)
+uses: azure/webapps-deploy@v3
+  with:
+    publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+    package: .
 
 on:
   push:
